@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Gate Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🚪 Smart Gate Dashboard</h1>
+
+<div class="card">
+  <h2>Status Gate</h2>
+  <p id="status">Loading...</p>
+</div>
+
+<div class="card">
+  <h2>Log Akses</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Status</th>
+        <th>Metode</th>
+        <th>Waktu</th>
+      </tr>
+    </thead>
+    <tbody id="logTable"></tbody>
+  </table>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+</script>
+</body>
+</html>
