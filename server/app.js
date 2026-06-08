@@ -1,32 +1,72 @@
-const express = require('express');
-const app = express();
+require('dotenv').config();
 
-const http = require('http'); // ✅ WAJIB
+const express = require('express');
+const http = require('http');
+const path = require('path');
+
+const app = express();
 const server = http.createServer(app);
 
 const { Server } = require('socket.io');
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+});
 
-const path = require('path'); // ✅ cukup sekali
-
+// ================= MIDDLEWARE =================
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// simpan io biar bisa dipakai di controller
+// ================= GLOBAL SOCKET =================
 app.set('io', io);
 
-// static dashboard
-app.use(express.static(path.join(__dirname, '../web-dashboard')));
-
-// routes
+// ================= ROUTES =================
 const gateRoutes = require('./routes/gate');
 app.use('/api/gate', gateRoutes);
 
-// koneksi socket
-io.on('connection', (socket) => {
-  console.log("Client connected:", socket.id);
+// ================= STATIC DASHBOARD =================
+// Always serve built files from dist
+const dashboardPath = path.join(__dirname, '../web-dashboard/dist');
+app.use(express.static(dashboardPath));
+
+// ================= ROOT DASHBOARD =================
+app.get('/', (req, res) => {
+  res.sendFile(path.join(dashboardPath, 'index.html'));
 });
 
-// jalankan server
-server.listen(3000, () => {
-  console.log("Server jalan di http://localhost:3000");
+// ================= SOCKET CONNECTION =================
+io.on('connection', (socket) => {
+  const count = io.sockets.sockets.size;
+  console.log(`✅ Client connected: ${socket.id} (total: ${count})`);
+
+  // Send history to newly connected client
+  const history = gateRoutes.getHistory();
+  socket.emit('gate:history', history);
+  console.log(`📤 Sent history (${history.length} entries) to ${socket.id}`);
+
+  socket.on('disconnect', () => {
+    const after = io.sockets.sockets.size;
+    console.log(`❌ Client disconnected: ${socket.id} (remaining: ${after})`);
+  });
+});
+
+// ================= ERROR HANDLER =================
+app.use((err, req, res, next) => {
+  console.log("Server Error:", err.stack);
+  res.status(500).json({
+    message: "Internal Server Error"
+  });
+});
+
+// ================= START SERVER =================
+const PORT = process.env.PORT || 3000;
+
+const sendWhatsApp = require('./services/whatsapp');
+sendWhatsApp("✅ Smart Gate Server Aktif");
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server jalan di:`);
+  console.log(`Local   : http://localhost:${PORT}`);
+  console.log(`Network : http://0.0.0.0:${PORT}`);
 });

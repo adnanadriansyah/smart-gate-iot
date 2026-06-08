@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  background: #080C12;
+  font-family: 'Outfit', sans-serif;
+  color: #E2EAF4;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Animations ───────────────────────────────────────── */
+@keyframes scan {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseRing {
+  0%   { transform: scale(1);    opacity: 0.8; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Utility classes ──────────────────────────────────── */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(34,211,238,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.scanline::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(34,211,238,0.15), transparent);
+  animation: scan 5s linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Glass morphism */
+.glass {
+  background: linear-gradient(135deg, rgba(22,33,54,0.9) 0%, rgba(13,19,32,0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 32px rgba(0,0,0,0.5);
+}
+.glass-sm {
+  background: rgba(13,19,32,0.8);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Stat card accents */
+.stat-cyan    { border-top: 2px solid #22D3EE; }
+.stat-emerald { border-top: 2px solid #10B981; }
+.stat-rose    { border-top: 2px solid #F43F5E; }
+.stat-amber   { border-top: 2px solid #F59E0B; }
+
+/* Badges */
+.badge-ok   { background: rgba(16,185,129,0.12); color: #34D399; border: 1px solid rgba(16,185,129,0.3); }
+.badge-fail { background: rgba(244,63,94,0.12);  color: #FB7185; border: 1px solid rgba(244,63,94,0.3); }
+.badge-fp   { background: rgba(34,211,238,0.1);  color: #67E8F9; border: 1px solid rgba(34,211,238,0.25); }
+
+/* Gate ring states */
+.ring-open {
+  box-shadow: 0 0 0 4px rgba(16,185,129,0.15), 0 0 48px rgba(16,185,129,0.25);
+  border-color: rgba(16,185,129,0.6) !important;
+}
+.ring-closed {
+  box-shadow: 0 0 0 4px rgba(244,63,94,0.12), 0 0 32px rgba(244,63,94,0.2);
+  border-color: rgba(244,63,94,0.5) !important;
+}
+.card-open   { box-shadow: 0 0 0 1px rgba(16,185,129,0.2),  0 8px 48px rgba(0,0,0,0.5), 0 0 64px rgba(16,185,129,0.08); }
+.card-closed { box-shadow: 0 0 0 1px rgba(244,63,94,0.15),  0 8px 48px rgba(0,0,0,0.5), 0 0 64px rgba(244,63,94,0.06); }
+
+/* Animations */
+.animate-blink      { animation: blink 1.8s ease-in-out infinite; }
+.animate-pulse-ring { animation: pulseRing 2s ease-out infinite; }
+.animate-spin-slow  { animation: spinSlow 6s linear infinite; }
+.animate-ping       { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.row-in             { animation: fadeUp 0.35s ease-out; }
+
+/* Divider */
+.h-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
+
+/* Socket status pill variants */
+.pill-connected    { background: rgba(16,185,129,0.1);  border-color: rgba(16,185,129,0.3);  color: #34D399; }
+.pill-connecting   { background: rgba(245,158,11,0.1);  border-color: rgba(245,158,11,0.3);  color: #FCD34D; }
+.pill-disconnected { background: rgba(244,63,94,0.1);   border-color: rgba(244,63,94,0.3);   color: #FB7185; }
+.pill-demo         { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); color: #FCD34D; }
+
+/* Table row hover */
+tr:hover td { background: rgba(34,211,238,0.025); }
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.2); border-radius: 99px; }
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  transition: all 0.3s ease;
+  transform: translateY(80px);
+  opacity: 0;
+  pointer-events: none;
+}
+#toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
